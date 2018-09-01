@@ -37,6 +37,9 @@ extension Collection where Element == LazyFuture<Void> {
 }
 
 extension Collection where Element: FutureType {
+    fileprivate func newPromise(_ eventLoop: EventLoop) -> Promise<[Element.Expectation]> {
+        return eventLoop.newPromise()
+    }
     /// Flattens an array of futures into a future with an array of results.
     /// - note: the order of the results will match the order of the futures in the input array.
     public func flatten(on worker: Worker) -> Future<[Element.Expectation]> {
@@ -47,10 +50,10 @@ extension Collection where Element: FutureType {
         }
 
         // create promise and array of elements with reservation
-        let promise = worker.eventLoop.newPromise([Element.Expectation].self)
+        let promise = self.newPromise(worker.eventLoop)
 
         // allocate results array
-        var results: [Element.Expectation?] = .init(repeating: nil, count: count)
+        var results: [Element.Expectation?] = .init(repeating: nil, count: Int(count))
         // keep track of remaining results
         var remaining = count
 
@@ -67,7 +70,7 @@ extension Collection where Element: FutureType {
                     results[i] = el
                     // zero remaining, succeed the promise
                     if remaining == 0 {
-                        promise.succeed(result: results.compactMap { $0 })
+                        promise.succeed(result: results.flatMap { $0 })
                     }
                 }
             }
