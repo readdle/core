@@ -1,4 +1,4 @@
-// swift-tools-version:4.1
+// swift-tools-version:5.0
 import PackageDescription
 
 let package = Package(
@@ -12,7 +12,7 @@ let package = Package(
     ],
     dependencies: [
         /// Event-driven network application framework for high performance protocol servers & clients, non-blocking.
-        .package(url: "https://github.com/apple/swift-nio.git", from: "1.14.1"),
+        .package(url: "https://github.com/readdle/swift-nio.git", .branch("1.14.1-android")),
     ],
     targets: [
         .target(name: "Async", dependencies: ["NIO"]),
@@ -24,5 +24,8 @@ let package = Package(
         .target(name: "COperatingSystem"),
         .target(name: "Debugging"),
         .testTarget(name: "DebuggingTests", dependencies: ["Debugging"]),
-    ]
+    ],
+    swiftLanguageVersions: [.v5],
+    cLanguageStandard: .c11,
+    cxxLanguageStandard: .cxx11
 )
