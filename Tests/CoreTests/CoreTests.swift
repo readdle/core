@@ -1,7 +1,12 @@
 import Core
+import Foundation
 import XCTest
 
 class CoreTests: XCTestCase {
+
+    // Druk: unfortunately in our Foundation class Process not available for Android
+    // https://github.com/readdle/swift-corelibs-foundation/blob/swift-android-5.0-branch/Foundation/Process.swift
+    #if !os(Android)
     func testProcessExecute() throws {
         try XCTAssertEqual(Process.execute("/bin/echo", "hi"), "hi")
     }
@@ -31,6 +36,7 @@ class CoreTests: XCTestCase {
     func testProcessExecuteMissing() throws {
         XCTAssertThrowsError(try Process.execute("foo", "hi"), "hi")
     }
+    #endif
 
     func testBase64() {
         let original = Data("The quick brown fox jumps over 13 lazy dogs.".utf8)
@@ -170,6 +176,7 @@ class CoreTests: XCTestCase {
         }
     }
 
+    #if !os(Android)
     static let allTests = [
         ("testProcessExecute", testProcessExecute),
         ("testProcessAsyncExecute", testProcessAsyncExecute),
@@ -180,4 +187,13 @@ class CoreTests: XCTestCase {
         ("testHexEncodedString", testHexEncodedString),
         ("testHeaderValue", testHeaderValue),
     ]
+    #else
+    static let allTests = [
+        ("testBase64", testBase64),
+        ("testBase64URL", testBase64URL),
+        ("testBase64URLEscaping", testBase64URLEscaping),
+        ("testHexEncodedString", testHexEncodedString),
+        ("testHeaderValue", testHeaderValue),
+    ]
+    #endif
 }
